@@ -1,0 +1,47 @@
+version: '2.1'
+
+services:
+  magento:
+    image: zetaron/magento-1.9:php-apache
+    volumes:
+      - ./:/var/www/html
+    networks:
+      - backend
+      - exposed
+    environment:
+      - MAGENTO_DB_HOST=mysql
+      - MAGENTO_DB_USER=$COMPOSE_PROJECT_NAME
+      - MAGENTO_DB_PASSWORD=$COMPOSE_PROJECT_NAME
+  mysql:
+    image: mysql
+    networks:
+      - backend
+    volumes:
+      - db:/var/lib/mysql
+    environment:
+      - MYSQL_DATABASE=$COMPOSE_PROJECT_NAME
+      - MYSQL_USER=$COMPOSE_PROJECT_NAME
+      - MYSQL_PASSWORD=$COMPOSE_PROJECT_NAME
+      - MYSQL_ROOT_PASSWORD=$COMPOSE_PROJECT_NAME
+  shell:
+    image: zetaron/magento-1.9:tools
+    volumes:
+      - ./:/var/www/html
+      - ~/.composer/:/root/.composer
+    networks:
+      - backend
+    environment:
+      - MAGENTO_DB_HOST=mysql
+      - MAGENTO_DB_USER=$COMPOSE_PROJECT_NAME
+      - MAGENTO_DB_PASSWORD=$COMPOSE_PROJECT_NAME
+
+networks:
+  exposed:
+    external:
+      name: exposed
+  backend:
+    driver: bridge
+
+volumes:
+  db:
+    driver: local
