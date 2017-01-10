@@ -25,6 +25,7 @@ services:
       - MYSQL_ROOT_PASSWORD=$COMPOSE_PROJECT_NAME
   shell:
     image: zetaron/magento-1.9:tools
+    user: www-data
     volumes:
       - ./:/var/www/html
       - ~/.composer/:/root/.composer
