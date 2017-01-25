@@ -21,3 +21,10 @@ RUN wget -q --no-check-certificate -O /tmp/modman-installer https://raw.github.c
     && bash < /tmp/modman-installer \
     && mv ~/bin/modman /usr/bin/modman \
     && rm /tmp/modman-installer
+
+RUN apt-get update \
+    && curl -sL https://deb.nodesource.com/setup_7.x | bash - \
+    && apt-get install -y \
+       nodejs \
+       build-essential \
+    && rm -rf /var/lib/apt/lists/*

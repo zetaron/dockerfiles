@@ -2,27 +2,46 @@ version: '2.1'
 
 services:
   magento:
-    image: zetaron/magento-1.9:php-apache
+    image: zetaron/magento-1.9:php-apache-xdebug
     volumes:
       - ./:/var/www/html
+      - ${SSL_CERT:-/etc/ssl/certs/tudock-stage.de.pem}:/etc/ssl/certs/default.pem:ro
     networks:
       - backend
-      - exposed
     environment:
-      - MAGENTO_DB_HOST=mysql
-      - MAGENTO_DB_USER=$COMPOSE_PROJECT_NAME
-      - MAGENTO_DB_PASSWORD=$COMPOSE_PROJECT_NAME
+      MAGENTO_DB_HOST: mysql
+      MAGENTO_DB_USER: ${COMPOSE_PROJECT_NAME:-magento}
+      MAGENTO_DB_PASSWORD: ${COMPOSE_PROJECT_NAME:-magento}
+      COMPOSE_PROJECT_NAME: ${COMPOSE_PROJECT_NAME:-magento}
+      XDEBUG_CONFIG: remote_host=${IP_ADDRESS:-xdebug.tudock-stage.de}
+    labels:
+      dns.service: magento
+      dns.domain: ${COMPOSE_PROJECT_NAME:-magento}
+      dns.tld: ${DNS_GEN_TLD:-tudock-stage.de}
+  watch:
+    image: zetaron/magento-1.9:tools
+    user: www-data
+    volumes:
+      - ./:/usr/src/app
+    working_dir: /usr/src/app
+    entrypoint: node
+    command: /usr/bin/npm run watch
   mysql:
-    image: mysql
+    image: mysql:5.6
     networks:
       - backend
     volumes:
       - db:/var/lib/mysql
+      - ${SQL_DUMP:-./var/sql/latest.sql.gz}:/docker-entrypoint-initdb.d/dump.sql.gz:ro
     environment:
-      - MYSQL_DATABASE=$COMPOSE_PROJECT_NAME
-      - MYSQL_USER=$COMPOSE_PROJECT_NAME
-      - MYSQL_PASSWORD=$COMPOSE_PROJECT_NAME
-      - MYSQL_ROOT_PASSWORD=$COMPOSE_PROJECT_NAME
+      MYSQL_DATABASE: ${COMPOSE_PROJECT_NAME:-magento}
+      MYSQL_USER: ${COMPOSE_PROJECT_NAME:-magento}
+      MYSQL_PASSWORD: ${COMPOSE_PROJECT_NAME:-magento}
+      MYSQL_ROOT_PASSWORD: ${COMPOSE_PROJECT_NAME:-magento}
+    labels:
+      dns.service: mysql
+      dns.domain: ${COMPOSE_PROJECT_NAME:-magento}
+      dns.tld: ${DNS_GEN_TLD:-tudock-stage.de}
   shell:
     image: zetaron/magento-1.9:tools
     user: www-data
@@ -32,14 +51,11 @@ services:
     networks:
       - backend
     environment:
-      - MAGENTO_DB_HOST=mysql
-      - MAGENTO_DB_USER=$COMPOSE_PROJECT_NAME
-      - MAGENTO_DB_PASSWORD=$COMPOSE_PROJECT_NAME
+      MAGENTO_DB_HOST: mysql
+      MAGENTO_DB_USER: ${COMPOSE_PROJECT_NAME:-magento}
+      MAGENTO_DB_PASSWORD: ${COMPOSE_PROJECT_NAME:-magento}
 
 networks:
-  exposed:
-    external:
-      name: exposed
   backend:
     driver: bridge
 
