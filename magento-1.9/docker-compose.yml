@@ -2,7 +2,7 @@ version: '2.1'
 
 services:
   magento:
-    image: zetaron/magento-1.9:php-apache-xdebug
+    image: zetaron/magento-1.9_php-apache-xdebug
     volumes:
       - ./:/var/www/html
       - ${SSL_CERT:-/etc/ssl/certs/tudock-stage.de.pem}:/etc/ssl/certs/default.pem:ro
@@ -19,7 +19,7 @@ services:
       dns.domain: ${COMPOSE_PROJECT_NAME:-magento}
       dns.tld: ${DNS_GEN_TLD:-tudock-stage.de}
   watch:
-    image: zetaron/magento-1.9:tools
+    image: zetaron/magento-1.9_tools
     user: www-data
     volumes:
       - ./:/usr/src/app
@@ -43,7 +43,7 @@ services:
       dns.domain: ${COMPOSE_PROJECT_NAME:-magento}
       dns.tld: ${DNS_GEN_TLD:-tudock-stage.de}
   shell:
-    image: zetaron/magento-1.9:tools
+    image: zetaron/magento-1.9_tools
     user: www-data
     volumes:
       - ./:/var/www/html
