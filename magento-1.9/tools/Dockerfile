@@ -1,4 +1,4 @@
-FROM zetaron/magento-1.9:php-apache
+FROM zetaron/magento-1.9_php-apache
 
 ENTRYPOINT /bin/bash
 
