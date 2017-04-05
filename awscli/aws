@@ -1,0 +1,19 @@
+#!/bin/sh
+
+IMAGE=zetaron/awscli
+
+if [ "${1}" == "update" ]
+then
+  shift 1
+  docker pull $IMAGE
+fi
+
+docker run \
+  -it \
+  --rm \
+  --env AWS_ACCESS_KEY_ID \
+  --env AWS_SECRET_ACCESS_KEY \
+  --env AWS_DEFAULT_REGION \
+  --volume $HOME/.aws:/root/.aws \
+  $IMAGE \
+  "${@:---version}"
