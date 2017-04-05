@@ -1,0 +1,13 @@
+#!/bin/sh
+
+IMAGE_VERSION=0.3.11
+
+docker() {
+	$(which docker) "$@"
+}
+
+docker run \
+	--rm \
+	--volumev $(pwd):$(pwd) \
+	--workdir $(pwd) \
+	zetaron/vim-vint:$IMAGE_VERSION "${@}"
